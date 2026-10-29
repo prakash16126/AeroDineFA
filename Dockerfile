@@ -1,15 +1,20 @@
-FROM node:16-slim AS builder
+# syntax=docker/dockerfile:1
+
+FROM node:22-slim AS builder
 WORKDIR /app
+
 COPY package*.json ./
-RUN npm install
+RUN npm ci
+
 COPY . .
 RUN npm run build
 
-# Stage 2: Production
-FROM builder AS final
+FROM node:22-slim AS final
 WORKDIR /app
-COPY --from=builder /app/build ./build
+
 COPY package*.json ./
-RUN npm install --production
+RUN npm ci
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "3000"]

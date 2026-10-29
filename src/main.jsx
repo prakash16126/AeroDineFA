@@ -8,9 +8,9 @@ import './styles.css';
 const CART_KEY = 'aerodine-demo-cart';
 const THEME_KEY = 'aerodine-theme';
 const money = formatPrice;
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') || '';
-const RESERVATION_API_URL = import.meta.env.VITE_RESERVATION_API_URL || (API_BASE_URL ? `${API_BASE_URL}/api/reservations` : '');
-const ORDER_API_URL = import.meta.env.VITE_ORDER_API_URL || (API_BASE_URL ? `${API_BASE_URL}/api/orders` : '');
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL?.replace(/\/+$/, '') || '';
+const RESERVATION_API_URL = process.env.REACT_APP_RESERVATION_API_URL || (API_BASE_URL ? `${API_BASE_URL}/api/reservations` : '');
+const ORDER_API_URL = process.env.REACT_APP_ORDER_API_URL || (API_BASE_URL ? `${API_BASE_URL}/api/orders` : '');
 
 function createReference(prefix) {
   const suffix = globalThis.crypto?.randomUUID?.().replace(/-/g, '').slice(0, 10).toUpperCase()
@@ -610,4 +610,3 @@ function App() {
 
 const root = createRoot(document.getElementById('root'));
 root.render(<App />);
-if (import.meta.hot) import.meta.hot.dispose(() => root.unmount());

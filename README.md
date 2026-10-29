@@ -1,23 +1,26 @@
 # AeroDine
 
-A responsive React + Vite restaurant ordering and reservation **local demo** for AeroDine, Hitech City, Hyderabad. The app includes the complete 84-item illustrative menu, search and filters, dish details, a persistent INR cart, demo checkout request, reservation request preview, order lookup, light/dark themes, and a read-only admin preview.
+A responsive React restaurant ordering and reservation **local demo** for AeroDine, Hitech City, Hyderabad. The app includes the complete 84-item illustrative menu, search and filters, dish details, a persistent INR cart, demo checkout request, reservation request preview, order lookup, light/dark themes, and a read-only admin preview.
 
 ## Run locally
 
-Requirements: Node.js 20.19+ or 22.12+ (Vite 8 requirement) and npm.
+Requirements: Node.js 20.19+ or 22.12+ and npm.
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. The menu, cart, theme, demo order request, and reservation request are stored locally in the browser. The demo does not need external credentials.
+The development server starts at `http://localhost:3000` and serves client-side routes with a fallback to the app entry page. esbuild bundles the React JSX and CSS; no Vite tooling is used. The menu, cart, theme, demo order request, and reservation request are stored locally in the browser. The demo does not need external credentials.
 
 ```sh
 npm test
 npm run build
-npm run preview
 ```
+
+The production-ready static site is written to `dist/` and can be hosted by any static web server configured to serve `index.html` for client-side routes. The build copies static assets from `public/` and bundles the app into `dist/assets/`.
+
+Optional public API endpoint URLs can be set in `.env.local` or `.env` using the `REACT_APP_*` names below; environment values are embedded in the browser bundle, so never put secrets in them.
 
 ## What's implemented
 
@@ -55,15 +58,15 @@ The data source and image manifest live in [`src/data/menu.js`](./src/data/menu.
 
 1. Create a Supabase project and configure authentication, email/phone settings and production redirect URLs.
 2. Apply [`supabase/migrations/202610280001_initial_schema.sql`](./supabase/migrations/202610280001_initial_schema.sql) with Supabase CLI or the SQL editor.
-3. Configure `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `AERODINE_PUBLIC_URL` in a trusted local shell or deployment secret manager. Never use a service-role key in browser code or a `VITE_` variable.
+3. Configure `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `AERODINE_PUBLIC_URL` in a trusted local shell or deployment secret manager. Never use a service-role key in browser code or a frontend variable.
 4. Run `npm run seed:supabase`. It upserts the categories and dishes and requires the deployed public URL for image paths.
 5. Grant staff roles to trusted users through a secured operator process. Do not expose writes to `user_roles` to clients.
 
-The migration defines RLS and a server-only write boundary for orders, order items, reservations and payments. The browser demo is not directly wired to Supabase. To connect an API, configure `VITE_API_BASE_URL`, `VITE_ORDER_API_URL`, and/or `VITE_RESERVATION_API_URL` in the frontend environment. These are endpoint URLs only and are public; do not put credentials in `VITE_*` variables.
+The migration defines RLS and a server-only write boundary for orders, order items, reservations and payments. The browser demo is not directly wired to Supabase. To connect an API, configure `REACT_APP_API_BASE_URL`, `REACT_APP_ORDER_API_URL`, and/or `REACT_APP_RESERVATION_API_URL` in `.env`, `.env.local`, or the frontend environment. These endpoint URLs are public; do not put credentials in frontend variables.
 
-The order endpoint is `POST /api/orders` (or `VITE_ORDER_API_URL`) and receives customer/address details, dish IDs and quantities, coupon code, payment method and an `Idempotency-Key`. It must independently re-read menu prices, validate serviceability/promotions, create an idempotent order, and return JSON with an `order` object containing an `id`, `orderNumber` or `reference`, a `status`, and integer `totalInPaise`; it may include `items`, subtotal/delivery/discount/tax paise values, delivery address and payment status. The lookup route is `GET {order-endpoint}/{reference}` and returns the same order shape.
+The order endpoint is `POST /api/orders` (or `REACT_APP_ORDER_API_URL`) and receives customer/address details, dish IDs and quantities, coupon code, payment method and an `Idempotency-Key`. It must independently re-read menu prices, validate serviceability/promotions, create an idempotent order, and return JSON with an `order` object containing an `id`, `orderNumber` or `reference`, a `status`, and integer `totalInPaise`; it may include `items`, subtotal/delivery/discount/tax paise values, delivery address and payment status. The lookup route is `GET {order-endpoint}/{reference}` and returns the same order shape.
 
-The reservation endpoint is `POST /api/reservations` (or `VITE_RESERVATION_API_URL`) and receives customer details, requested date/time, guest count and preferences. It must validate business hours and availability and prevent conflicts transactionally. Return an object with a `reference` and a `status` of `confirmed` or `pending`; a success-shaped response is required before the UI displays either state. Configure reservation-hour/capacity settings only after the business confirms them.
+The reservation endpoint is `POST /api/reservations` (or `REACT_APP_RESERVATION_API_URL`) and receives customer details, requested date/time, guest count and preferences. It must validate business hours and availability and prevent conflicts transactionally. Return an object with a `reference` and a `status` of `confirmed` or `pending`; a success-shaped response is required before the UI displays either state. Configure reservation-hour/capacity settings only after the business confirms them.
 
 The migration RLS policy/server-only write boundary does not itself implement those API endpoints, payment integration, or staff operations. Add authenticated server/Edge Functions and server-side authorization before production. Razorpay must be created/verified server-side; this UI never handles payment secrets or card details.
 
@@ -88,6 +91,13 @@ src/
   data/menu.test.js        Node test-runner catalog integrity checks
   main.jsx                 Pages and local demo interactions
   styles.css               Theme tokens, responsive styles and accessibility states
+public/
+  index.html               Browser entry page and theme initialization
+  images/                  Static restaurant and menu photography
+scripts/
+  build.js                 esbuild production build to dist/
+  build-config.js          Environment loading and shared bundler options
+  dev.js                   Local static server and esbuild watcher
 supabase/
   migrations/              Initial schema and row-level security
   seed.js                  Server-key-only REST seed script

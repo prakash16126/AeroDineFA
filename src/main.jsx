@@ -109,13 +109,17 @@ function SectionTitle({ eyebrow, title, copy }) {
 }
 
 function Home({ add, open, cart, update }) {
-  const featured = menu.filter((dish) => dish.isFeatured);
+  const dishesWithPhotos = menu.filter((dish) => imageManifest.some((image) => image.dishId === dish.id && image.verified));
+  const featured = [
+    ...dishesWithPhotos.filter((dish) => dish.isFeatured),
+    ...dishesWithPhotos.filter((dish) => !dish.isFeatured),
+  ].slice(0, 6);
   return <main className="home-main ambient-page">
     <section className="hero">
       <div className="hero-copy"><span className="eyebrow">A LITTLE MORE DELICIOUS</span><h1>Good food.<br /><em>Elevated moments.</em></h1><p>Thoughtful flavours from Hyderabad and beyond. Freshly made, comfortably priced, and always served with a warm welcome.</p><div className="hero-actions"><a className="button button-primary" href="/menu">Explore the menu <span>↗</span></a><a className="button button-quiet" href="/reservations">Reserve a table</a></div><div className="hero-caption"><span className="caption-line"></span> A table worth gathering around</div></div>
       <div className="hero-image"><img src="/images/photo-1517248135467-4c7edcad34c4.jpg" alt="Warmly lit restaurant dining room" /><div className="hero-image-label"><span>THE AERODINE EXPERIENCE</span><strong>Made for good company.</strong></div></div>
     </section>
-    <section className="home-section featured-section"><SectionTitle eyebrow="THE HOUSE FAVOURITES" title="A few reasons to linger" copy="A first taste of the menu. Every dish is prepared fresh when you order." /><div className="dish-grid">{featured.slice(0, 6).map((dish) => <DishCard key={dish.id} dish={dish} add={add} open={open} quantity={cart[dish.id]?.quantity || 0} update={update} />)}</div><a className="text-link" href="/menu">Explore all 84 dishes <span>→</span></a></section>
+    <section className="home-section featured-section"><SectionTitle eyebrow="THE HOUSE FAVOURITES" title="A few reasons to linger" copy="A first taste of the menu. Every dish is prepared fresh when you order." /><div className="dish-grid">{featured.map((dish) => <DishCard key={dish.id} dish={dish} add={add} open={open} quantity={cart[dish.id]?.quantity || 0} update={update} />)}</div><a className="text-link" href="/menu">More <span>→</span></a></section>
     <section className="category-band"><div className="category-band-title"><span className="eyebrow">SOMETHING FOR EVERY CRAVING</span><h2>Find your kind of flavour.</h2></div><div className="category-chips">{categories.map((category) => <a key={category.id} href={`/menu?category=${encodeURIComponent(category.name)}`}>{category.name}<span>↗</span></a>)}</div></section>
     <section className="experience home-section"><SectionTitle eyebrow="AERODINE, IN GOOD COMPANY" title="The good things are in the details." /><div className="experience-grid"><article><span>01</span><h3>Room to unwind</h3><p>Warm lighting, comfortable seats and an easy-going setting made for long lunches and unhurried evenings.</p></article><article><span>02</span><h3>Fresh from the kitchen</h3><p>From the tandoor to the wok, our menu is made to order. Restaurant practices are subject to confirmation.</p></article><article><span>03</span><h3>Good food, fair prices</h3><p>A generous mix of familiar favourites and new discoveries, at illustrative menu prices you can feel good about.</p></article></div></section>
     <section className="location-strip"><div><span className="eyebrow">COME FIND US</span><h2>Hitech City, Hyderabad</h2><p>Walk-ins welcome. Address and operating hours will be published once verified.</p></div><a href="/reservations" className="button button-outline">Plan a visit</a></section>

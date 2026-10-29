@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18313b" />
+    <meta name="description" content="AeroDine — freshly crafted, comfortably priced dining in Hitech City, Hyderabad." />
+    <title>AeroDine | Good Food. Elevated Moments.</title>
+    <script>
+      try {
+        const theme = localStorage.getItem('aerodine-theme') ||
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

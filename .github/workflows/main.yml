@@ -54,7 +54,7 @@ concurrency:
 # ─────────────────────────────────────────────
 env:
   NODE_VERSION: "22"
-  IMAGE_NAME:  ${{ secrets.DOCKER_USER }}/AeroDine
+  IMAGE_NAME:  ${{ secrets.DOCKER_USER }}/aerodine
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:

@@ -20,6 +20,8 @@ npm run build
 
 The production-ready static site is written to `dist/` and can be hosted by any static web server configured to serve `index.html` for client-side routes. The build copies static assets from `public/` and bundles the app into `dist/assets/`.
 
+Run `npm start` to serve the built site locally on port 3000. The Docker image uses the same lightweight Node static server and does not install Vite or other runtime dependencies.
+
 Optional public API endpoint URLs can be set in `.env.local` or `.env` using the `REACT_APP_*` names below; environment values are embedded in the browser bundle, so never put secrets in them.
 
 ## What's implemented
@@ -98,6 +100,7 @@ scripts/
   build.js                 esbuild production build to dist/
   build-config.js          Environment loading and shared bundler options
   dev.js                   Local static server and esbuild watcher
+  serve.js                 Production static server with route fallback
 supabase/
   migrations/              Initial schema and row-level security
   seed.js                  Server-key-only REST seed script
